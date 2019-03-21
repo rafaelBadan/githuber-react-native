@@ -1,9 +1,15 @@
 import React from 'react';
 
-import { View } from 'react-native';
+import { View, Text, AsyncStorage } from 'react-native';
 
-// import styles from './styles';
+import styles from './styles';
 
-const Repositories = () => <View />;
+AsyncStorage.clear();
+
+const Repositories = () => (
+  <View style={styles.container}>
+    <Text>Repositories</Text>
+  </View>
+);
 
 export default Repositories;

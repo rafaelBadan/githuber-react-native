@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StatusBar, AsyncStorage,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StatusBar,
+  AsyncStorage,
+  ActivityIndicator,
 } from 'react-native';
 import api from '../../services/api';
 
@@ -8,6 +14,8 @@ import styles from './styles';
 
 export default class Welcome extends Component {
   state = {
+    loading: false,
+    error: false,
     username: '',
   };
 
@@ -23,18 +31,20 @@ export default class Welcome extends Component {
   signIn = async () => {
     const { username } = this.state;
     const { navigation } = this.props;
+
+    this.setState({ loading: true });
     try {
       await this.checkUserExists(username);
       await this.saveUser(username);
-
+      this.setState({ loading: false });
       navigation.navigate('Repositories');
     } catch (err) {
-      console.tron.log('Usuário inexistente');
+      this.setState({ loading: false, error: true });
     }
   };
 
   render() {
-    const { username } = this.state;
+    const { username, loading, error } = this.state;
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />
@@ -42,6 +52,9 @@ export default class Welcome extends Component {
         <Text style={styles.text}>
           Para continuar precisamos que você informe seu usuário do GitHub
         </Text>
+
+        {error && <Text style={styles.error}>Usuário inexistente</Text>}
+
         <View style={styles.form}>
           <TextInput
             style={styles.input}
@@ -54,7 +67,11 @@ export default class Welcome extends Component {
           />
 
           <TouchableOpacity style={styles.button} onPress={this.signIn}>
-            <Text style={styles.buttonText}>Prosseguir</Text>
+            {loading ? (
+              <ActivityIndicator size="small" color="#FFF" />
+            ) : (
+              <Text style={styles.buttonText}>Prosseguir</Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
